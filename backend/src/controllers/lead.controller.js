@@ -11,10 +11,10 @@ export const createLead = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Name, email, phone number, and company name are required");
     }
 
-    const existingLead = await Lead.findOne({ email });
-    if (existingLead) {
-        throw new ApiError(409, "A lead with this email already exists");
-    }
+    // const existingLead = await Lead.findOne({ email });
+    // if (existingLead) {
+    //     throw new ApiError(409, "A lead with this email already exists");
+    // }
 
     const lead = await Lead.create({
         name, email, phoneNumber, companyName, status, notes
