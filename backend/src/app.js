@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import leadRouter from './routes/lead.routes.js';
+
+dotenv.config({ path: './.env' }); 
 
 const app = express();
 
