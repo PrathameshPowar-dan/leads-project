@@ -4,8 +4,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/le
 
 export const leadService = {
     // Get all leads
-    getAllLeads: async (page = 1, limit = 10) => {
-        const response = await axios.get(`${API_URL}?page=${page}&limit=${limit}`);
+    getAllLeads: async (params = {}) => {
+        const { page = 1, limit = 10, status = '', order = 'desc', search = '' } = params;
+        let queryString = `?page=${page}&limit=${limit}&sortBy=createdAt&order=${order}`;
+
+        if (status) queryString += `&status=${status}`;
+        if (search) queryString += `&search=${search}`;
+
+        const response = await axios.get(`${API_URL}${queryString}`);
         return response.data;
     },
 

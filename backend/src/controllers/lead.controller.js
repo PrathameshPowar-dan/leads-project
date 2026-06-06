@@ -25,18 +25,32 @@ export const createLead = asyncHandler(async (req, res) => {
 
 // Get all leads with pagination and sorting
 export const getAllLeads = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = req.query;
+    const { page = 1, limit = 10, sortBy = 'createdAt', order = 'desc', status, search } = req.query;
 
-    const leads = await Lead.find()
+    const query = {};
+
+    if (status) {
+        query.status = status;
+    }
+
+    if (search) {
+        query.$or = [
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+            { companyName: { $regex: search, $options: 'i' } }
+        ];
+    }
+
+    const leads = await Lead.find(query)
         .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
         .limit(Number(limit))
         .skip((Number(page) - 1) * Number(limit));
 
-    const total = await Lead.countDocuments();
+    const total = await Lead.countDocuments(query);
 
     return res.status(200).json(new ApiResponse(200, {
         leads,
-        totalPages: Math.ceil(total / Number(limit)),
+        totalPages: Math.ceil(total / Number(limit)) || 1,
         currentPage: Number(page),
         totalLeads: total
     }, "Leads fetched successfully"));
